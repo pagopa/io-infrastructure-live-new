@@ -2,38 +2,26 @@ dependency "subnet" {
   config_path = "../subnet"
 }
 
-dependency "cosmosdb_account" {
-  config_path = "../../cosmosdb/account"
-}
-
-dependency "cosmosdb_database" {
-  config_path = "../../cosmosdb/database"
-}
-
-dependency "storage_account" {
-  config_path = "../../storage/account"
-}
-
-# Internal
+# pltest
 dependency "resource_group" {
-  config_path = "../../../resource_group"
+  config_path = "../../resource_group"
 }
 
 dependency "subnet_apimapi" {
-  config_path = "../../../api/apim/subnet"
+  config_path = "../../../internal/api/apim/subnet"
 }
 
 # Common
 dependency "virtual_network" {
-  config_path = "../../../../common/virtual_network"
+  config_path = "../../../common/virtual_network"
 }
 
 dependency "application_insights" {
-  config_path = "../../../../common/application_insights"
+  config_path = "../../../common/application_insights"
 }
 
 dependency "key_vault" {
-  config_path = "../../../../common/key_vault"
+  config_path = "../../../common/key_vault"
 }
 
 # Include all settings from the root terragrunt.hcl file
@@ -41,12 +29,13 @@ include {
   path = find_in_parent_folders()
 }
 
+
 terraform {
-  source = "git::git@github.com:pagopa/io-infrastructure-modules-new.git//azurerm_function_app?ref=v2.0.24"
+  source = "git::git@github.com:pagopa/io-infrastructure-modules-new.git//azurerm_function_app?ref=v2.0.20"
 }
 
 inputs = {
-  name                = "public"
+  name                = "pltest"
   resource_group_name = dependency.resource_group.outputs.resource_name
 
   application_insights_instrumentation_key = dependency.application_insights.outputs.instrumentation_key
@@ -57,21 +46,19 @@ inputs = {
     WEBSITE_RUN_FROM_PACKAGE     = "1"
     NODE_ENV                     = "production"
 
-    COSMOSDB_URI      = dependency.cosmosdb_account.outputs.endpoint
-    COSMOSDB_KEY      = dependency.cosmosdb_account.outputs.primary_master_key
-    COSMOSDB_NAME     = dependency.cosmosdb_database.outputs.name
-    StorageConnection = dependency.storage_account.outputs.primary_connection_string
+    TEST_SETTING1 = "VALUE1"
+    TEST_SETTING2 = "VALUE2"
 
-    VALIDATION_CALLBACK_URL = "https://app-backend.io.italia.it/email_verification.html"
-
-    # DNS Config for private endpoints resolution
+    # ref: https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet
     WEBSITE_DNS_SERVER     = "168.63.129.16"
     WEBSITE_VNET_ROUTE_ALL = 1
+
   }
 
   app_settings_secrets = {
     key_vault_id = dependency.key_vault.outputs.id
     map = {
+      TEST_SECRET = "common-TEST-SECRET"
     }
   }
 
