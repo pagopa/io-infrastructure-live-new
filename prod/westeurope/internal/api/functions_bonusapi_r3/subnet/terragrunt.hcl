@@ -9,7 +9,7 @@ include {
 }
 
 terraform {
-  source = "git::git@github.com:pagopa/io-infrastructure-modules-new.git//azurerm_subnet?ref=v2.0.25"
+  source = "git::git@github.com:pagopa/io-infrastructure-modules-new.git//azurerm_subnet?ref=v2.0.32"
 }
 
 inputs = {
@@ -30,6 +30,7 @@ inputs = {
 
   service_endpoints = [
     "Microsoft.Web",
-    "Microsoft.AzureCosmosDB"
+    "Microsoft.AzureCosmosDB",
+    "Microsoft.Storage"
   ]
 }
