@@ -44,7 +44,7 @@ include {
 }
 
 terraform {
-  source = "git::git@github.com:pagopa/io-infrastructure-modules-new.git//azurerm_application_gateway?ref=v2.1.14"
+  source = "git::git@github.com:pagopa/io-infrastructure-modules-new.git//azurerm_application_gateway?ref=v2.1.15"
 }
 
 inputs = {
@@ -104,11 +104,18 @@ inputs = {
         port                  = 80
         path                  = "/"
         cookie_based_affinity = "Disabled"
-        request_timeout       = 180
+        request_timeout       = 3
         host_name             = dependency.app_service_appbackend.outputs.default_site_hostname
       }
 
       rewrite_rule_set_name = "HttpHeader"
+
+
+      connection_draining = {
+        enabled           = true
+        drain_timeout_sec = 20
+      }
+
     }
   ]
 
